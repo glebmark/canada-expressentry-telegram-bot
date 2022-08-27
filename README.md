@@ -7,20 +7,17 @@ $ npm install
 ## Running the app
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
+# development + watch mode
+$ npm run dev
 
 # production mode
-$ npm run start:prod
+$ npm run start
 ```
 
 ## Test
 
 ```bash
-# unit tests
+# unit tests + watch
 $ npm run test
 
 # e2e tests
