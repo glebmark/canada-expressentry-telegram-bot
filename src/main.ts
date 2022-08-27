@@ -6,3 +6,12 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
+
+// TODO:
+// plan architecture
+// save in DB timestamp of last parsing
+// save all URLs in DB
+//
+//
+//
+//
