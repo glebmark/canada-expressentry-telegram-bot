@@ -9,9 +9,10 @@ export class ScraperService {
   ) {}
 
   scrapeData = async () => {
-    function run () {
+
         return new Promise(async (resolve, reject) => {
             try {
+                console.log('started')
                 const browser = await puppeteer.launch();
                 const page = await browser.newPage();
 
@@ -24,34 +25,43 @@ export class ScraperService {
                 await page.waitForSelector('.sorting_1')
                 
                 let data = await page.evaluate(() => {
-                    let results = [];
-                    let items = document.querySelectorAll('a');
 
-                    items.forEach((item) => {
-                        if(item.innerHTML === '219')
-                        results.push({
-                            url:  item.getAttribute('href'), // TODO save this URLs in DB
-                            text: item.innerHTML,
+                    let allTableRowsHTMLElement = document.querySelectorAll('tr');
+
+                    const allTableRows = [...allTableRowsHTMLElement];
+
+                    // TODO add if statement between 76 and 77 draws, they are different
+                    const result = allTableRows.map(tr => {
+                        const tableRowRawDirty = [...tr.childNodes]
+                        // TODO refactor to regExp
+                        const tableRowRaw = tableRowRawDirty.filter(td => td.textContent !== '\n\t\t  ' && td.textContent !== '\n\t\t') 
+                        
+                        const tableRow = tableRowRaw.map(td => {
+                            return td.textContent
                         })
+
+                        // TODO remove first result, it's note draw!
+                        return {
+                            drawIndex: tableRow[0] ? tableRow[0] : null, // TODO toNumber
+                            date: tableRow[1] ? tableRow[1] : null, // TODO check how save date to postgres properly
+                            program: tableRow[2] ? tableRow[2] : null,
+                            invitations: tableRow[3] ? tableRow[3] : null,  // TODO toNumber
+                            lowestCRS: tableRow[4] ? tableRow[4] : null,  // TODO toNumber
+                        }
                     })
 
-
-
-                    return results;
+                    return result;
                 })
                 browser.close();
+                
                 console.log(data)
+                console.log('done')
+
+                // TODO add checks if data is valid, because if in future EE Canada will change structure of table, it would break DB
                 return resolve(data);
             } catch (e) {
                 return reject(e);
             }
-        })
+        })    
     }
-    run()
-    // .then(console.log).catch(console.error);
-
-    
-}
-
-  
 }
