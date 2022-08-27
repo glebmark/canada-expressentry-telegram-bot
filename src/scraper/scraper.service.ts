@@ -35,25 +35,28 @@ export class ScraperService {
                         const tableRowRawDirty = [...tr.childNodes]
                         // TODO refactor to regExp
                         const tableRowRaw = tableRowRawDirty.filter(td => td.textContent !== '\n\t\t  ' && td.textContent !== '\n\t\t') 
-                        
+
                         const tableRow = tableRowRaw.map(td => {
                             return td.textContent
                         })
 
                         // TODO remove first result, it's note draw!
                         return {
+                            // row: tableRow
                             drawIndex: tableRow[0] ? tableRow[0] : null, // TODO toNumber
                             date: tableRow[1] ? tableRow[1] : null, // TODO check how save date to postgres properly
                             program: tableRow[2] ? tableRow[2] : null,
                             invitations: tableRow[3] ? tableRow[3] : null,  // TODO toNumber
                             lowestCRS: tableRow[4] ? tableRow[4] : null,  // TODO toNumber
+                            url: `https://www.canada.ca/en/immigration-refugees-citizenship/corporate/mandate/policies-operational-instructions-agreements/ministerial-instructions/express-entry-rounds/invitations.html?q=${tableRow[0] ? tableRow[0] : null}`, // TODO toNumber
+                            // TODO change url field to virtual typeORM field, calculate on runtime from drawIndex and new url field in scraperSettings table
                         }
                     })
 
                     return result;
                 })
                 browser.close();
-                
+
                 console.log(data)
                 console.log('done')
 
